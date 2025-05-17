@@ -10,7 +10,7 @@ include("theme-header.php");
 include("connect.php");
 require_once("connect.php");
 
-mysqli_query($dblink, "SET CHARACTER SET utf8");
+mysqli_query($conn, "SET CHARACTER SET utf8");
 ?>
 
 <div class="container">
