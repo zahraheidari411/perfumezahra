@@ -3,7 +3,8 @@ include("theme-header.php");
 ?>
 
 
-<head><style>
+<head>
+    <style>
   
 
    

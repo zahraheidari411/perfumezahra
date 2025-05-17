@@ -1,5 +1,6 @@
 <?php
 include("theme-header.php");
+include("connect.php"); // فقط این یکی کافیه
 
 // اعتبارسنجی داده‌های ورودی
 $name = htmlspecialchars(trim($_POST["name"]));
@@ -7,7 +8,6 @@ $family = htmlspecialchars(trim($_POST["family"]));
 $username = htmlspecialchars(trim($_POST["username"]));
 $password = trim($_POST["password"]);
 $repassword = trim($_POST["repassword"]);
-$dblink=mysqli_connect("localhost","root","","perfume");
 
 // بررسی تطابق رمزها
 if ($password !== $repassword) {
@@ -20,16 +20,15 @@ if ($password !== $repassword) {
     exit();
 }
 
-// اتصال به پایگاه داده
-include("connect.php");
-if (!$dblink) {
+// بررسی اتصال
+if (!$conn) {
     die("اتصال به پایگاه داده ناموفق بود: " . mysqli_connect_error());
 }
-mysqli_query($dblink, "SET CHARACTER set utf8");
+mysqli_query($conn, "SET CHARACTER set utf8");
 
 // بررسی وجود نام کاربری تکراری
 $check_query = "SELECT * FROM `user` WHERE `username` = ?";
-$stmt = mysqli_prepare($dblink, $check_query);
+$stmt = mysqli_prepare($conn, $check_query);
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
 mysqli_stmt_store_result($stmt);
@@ -41,14 +40,14 @@ if (mysqli_stmt_num_rows($stmt) > 0) {
                 <a href="register.php" class="btn btn-sm btn-outline-primary mt-2">بازگشت به فرم ثبت نام</a>
             </div>
           </div>';
-    mysqli_close($dblink);
+    mysqli_close($conn);
     include("theme-footer.html");
     exit();
 }
 
 // درج کاربر جدید
 $insert_query = "INSERT INTO `user` (`name`, `family`, `username`, `password`, `type`) VALUES (?, ?, ?, ?, 0)";
-$stmt = mysqli_prepare($dblink, $insert_query);
+$stmt = mysqli_prepare($conn, $insert_query);
 mysqli_stmt_bind_param($stmt, "ssss", $name, $family, $username, $password);
 $result = mysqli_stmt_execute($stmt);
 
@@ -64,12 +63,12 @@ if ($result) {
     echo '<div class="container mt-4">
             <div class="alert alert-danger">
                 <i class="fas fa-exclamation-triangle me-2"></i> خطا در ثبت نام
-                <p class="mt-2">' . mysqli_error($dblink) . '</p>
+                <p class="mt-2">' . mysqli_error($conn) . '</p>
                 <a href="register.php" class="btn btn-sm btn-outline-primary mt-2">بازگشت به فرم ثبت نام</a>
             </div>
           </div>';
 }
 
-mysqli_close($dblink);
+mysqli_close($conn);
 include("theme-footer.html");
 ?>

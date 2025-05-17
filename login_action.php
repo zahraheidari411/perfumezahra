@@ -2,6 +2,7 @@
 session_start();
 include("theme-header.php");
 include("connect.php");
+require_once("connect.php");
 
 $dblink = mysqli_connect("localhost", "root", "", "perfume");
 

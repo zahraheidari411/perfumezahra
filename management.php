@@ -8,6 +8,8 @@ if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
 
 include("theme-header.php");
 include("connect.php");
+require_once("connect.php");
+
 mysqli_query($dblink, "SET CHARACTER SET utf8");
 ?>
 
