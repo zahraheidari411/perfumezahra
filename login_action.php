@@ -1,5 +1,6 @@
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors',1);
 include("theme-header.php");
 include("connect.php");
 require_once("connect.php");
