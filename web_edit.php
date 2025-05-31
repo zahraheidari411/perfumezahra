@@ -5,12 +5,12 @@ $id = intval($_GET["id"]);
 
 // خواندن اطلاعات از پایگاه داده
 include("connect.php");
-$dblink=mysqli_connect("localhost","root","","perfume");
+$conn=mysqli_connect("localhost","root","","perfumezahra");
 
-mysqli_query($dblink,"SET ChARACTER SET utf8");
-$result = mysqli_query($dblink, "SELECT * FROM `perfume23` WHERE id=$id");
+mysqli_query($conn,"SET ChARACTER SET utf8");
+$result = mysqli_query($conn, "SELECT * FROM `perfume23` WHERE id=$id");
 $row = mysqli_fetch_array($result);
-mysqli_close($dblink);
+mysqli_close($conn);
 ?>
 
 <div class="row justify-content-center">

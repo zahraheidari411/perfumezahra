@@ -1,11 +1,10 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors',1);
-include("theme-header.php");
 include("connect.php");
+
+include("theme-header.php");
 require_once("connect.php");
 
-$dblink = mysqli_connect("localhost", "root", "", "perfume");
+$dblink = mysqli_connect("localhost", "root", "", "perfumezahra");
 
 $username = mysqli_real_escape_string($dblink, $_POST["username"]);
 $password = mysqli_real_escape_string($dblink, $_POST["password"]);
@@ -22,7 +21,7 @@ if ($username === "admin@y" && $password === "9090") {
 }
 
 // بررسی در جدول user
-$result = mysqli_query($dblink, "SELECT * FROM `user` WHERE `username`='$username' AND `password`='$password'");
+$result = mysqli_query($dblink, "SELECT * FROM `user1` WHERE `username`='$username' AND `password`='$password'");
 $row = mysqli_fetch_array($result);
 
 // اگر در دیتابیس بود
@@ -35,4 +34,6 @@ if ($row) {
 
 } 
 mysqli_close($dblink);
+include("theme-footer.html");
+
 ?>

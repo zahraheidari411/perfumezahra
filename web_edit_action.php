@@ -19,16 +19,16 @@ move_uploaded_file($source,$target);
 
 
 include("connect.php");
-$dblink=mysqli_connect("localhost","root","","perfume");
-mysqli_query($dblink,"SET ChARACTER SET utf8");
-$name = mysqli_real_escape_string($dblink, $name);
-$desciption = mysqli_real_escape_string($dblink, $desciption);
-$price = mysqli_real_escape_string($dblink, $price);
-$target = mysqli_real_escape_string($dblink, $target);
+$conn=mysqli_connect("localhost","root","","perfumezahra");
+mysqli_query($conn,"SET ChARACTER SET utf8");
+$name = mysqli_real_escape_string($conn, $name);
+$desciption = mysqli_real_escape_string($conn, $desciption);
+$price = mysqli_real_escape_string($conn, $price);
+$target = mysqli_real_escape_string($conn, $target);
 //$id = mysqli_real_escape_string($dblink, $id);
 
-$result=mysqli_query($dblink,"UPDATE `perfume23` SET `name`='$name',`desciption`='$desciption',`price`='$price',`image`='$target' WHERE 1");
-mysqli_close($dblink);
+$result=mysqli_query($conn,"UPDATE `perfume23` SET `name`='$name',`desciption`='$desciption',`price`='$price',`image`='$target' WHERE 1");
+mysqli_close($conn);
 
 if($result==true){
     echo("ویرایش شد");

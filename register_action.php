@@ -1,79 +1,70 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 session_start();
+ob_start();
 
 include("theme-header.php");
-include("connect.php"); // فقط این یکی کافیه
 
-// اعتبارسنجی داده‌های ورودی
-$name = htmlspecialchars(trim($_POST["name"]));
-$family = htmlspecialchars(trim($_POST["family"]));
-$username = htmlspecialchars(trim($_POST["username"]));
-$password = trim($_POST["password"]);
-$repassword = trim($_POST["repassword"]);
+// اتصال به دیتابیس
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "perfumezahra"; // یا هر نام دیتابیسی که ساختی
 
-// بررسی تطابق رمزها
-if ($password !== $repassword) {
-    echo '<div class="container mt-4">
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i> رمز عبور و تکرار آن مطابقت ندارند
-                <a href="register.php" class="btn btn-sm btn-outline-primary mt-2">بازگشت به فرم ثبت نام</a>
-            </div>
-          </div>';
-    exit();
-}
+$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-// بررسی اتصال
 if (!$conn) {
-    die("اتصال به پایگاه داده ناموفق بود: " . mysqli_connect_error());
+    die("خطا در اتصال به پایگاه داده: " . mysqli_connect_error());
 }
-mysqli_query($conn, "SET CHARACTER set utf8");
 
-// بررسی وجود نام کاربری تکراری
-$check_query = "SELECT * FROM `user` WHERE `username` = ?";
-$stmt = mysqli_prepare($conn, $check_query);
-mysqli_stmt_bind_param($stmt, "s", $username);
-mysqli_stmt_execute($stmt);
-mysqli_stmt_store_result($stmt);
+// ست کردن UTF-8
+mysqli_query($conn, "SET NAMES utf8");
 
-if (mysqli_stmt_num_rows($stmt) > 0) {
-    echo '<div class="container mt-4">
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i> نام کاربری قبلاً ثبت شده است
-                <a href="register.php" class="btn btn-sm btn-outline-primary mt-2">بازگشت به فرم ثبت نام</a>
-            </div>
-          </div>';
+// گرفتن داده‌ها از فرم
+$name = trim($_POST["name"]);
+$family = trim($_POST["family"]);
+$username = trim($_POST["username"]);
+$password = trim($_POST["password"]);
+
+// بررسی خالی نبودن فیلدها
+if (empty($name) || empty($family) || empty($username) || empty($password)) {
+    die("لطفاً همه فیلدها را پر کنید.");
+}
+
+// بررسی تکراری نبودن username
+$check_sql = "SELECT id FROM user1 WHERE username = ?";
+$check_stmt = mysqli_prepare($conn, $check_sql);
+mysqli_stmt_bind_param($check_stmt, "s", $username);
+mysqli_stmt_execute($check_stmt);
+mysqli_stmt_store_result($check_stmt);
+
+if (mysqli_stmt_num_rows($check_stmt) > 0) {
+    echo "نام کاربری قبلاً استفاده شده است. لطفاً نام کاربری دیگری وارد کنید.";
     mysqli_close($conn);
-    include("theme-footer.html");
     exit();
 }
+mysqli_stmt_close($check_stmt);
 
-// درج کاربر جدید
-$insert_query = "INSERT INTO `user` (`name`, `family`, `username`, `password`, `type`) VALUES (?, ?, ?, ?, 0)";
-$stmt = mysqli_prepare($conn, $insert_query);
-mysqli_stmt_bind_param($stmt, "ssss", $name, $family, $username, $password);
-$result = mysqli_stmt_execute($stmt);
-
-if ($result) {
-    echo '<div class="container mt-4">
-            <div class="alert alert-success text-center">
-                <i class="fas fa-check-circle me-2"></i> ثبت نام با موفقیت انجام شد
-                <meta http-equiv="refresh" content="2; url=login.php">
-                <p class="mt-2">در حال انتقال به صفحه ورود...</p>
-            </div>
-          </div>';
-} else {
-    echo '<div class="container mt-4">
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i> خطا در ثبت نام
-                <p class="mt-2">' . mysqli_error($conn) . '</p>
-                <a href="register.php" class="btn btn-sm btn-outline-primary mt-2">بازگشت به فرم ثبت نام</a>
-            </div>
-          </div>';
+// افزودن کاربر جدید
+$insert_sql = "INSERT INTO user1 (name, family, username, password) VALUES (?, ?, ?, ?)";
+$insert_stmt = mysqli_prepare($conn, $insert_sql);
+if (!$insert_stmt) {
+    die("خطا در آماده‌سازی کوئری: " . mysqli_error($conn));
 }
 
+// بایند و اجرا
+mysqli_stmt_bind_param($insert_stmt, "ssss", $name, $family, $username, $password);
+if (mysqli_stmt_execute($insert_stmt)) {
+    echo "ثبت‌نام با موفقیت انجام شد.";
+    header("Location: login.php"); // تغییر مسیر در صورت موفقیت
+    exit();
+} else {
+    echo "خطا در ثبت‌نام: " . mysqli_error($conn);
+}
+
+mysqli_stmt_close($insert_stmt);
 mysqli_close($conn);
+ob_end_flush();
+
 include("theme-footer.html");
+
 ?>

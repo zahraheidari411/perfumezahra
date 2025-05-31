@@ -4,11 +4,11 @@ include("theme-header.php");
 $id = intval($_GET["id"]);
 
 include("connect.php");
-$dblink=mysqli_connect("localhost","root","","perfume");
+$conn=mysqli_connect("localhost","root","","perfumezahra");
 
-mysqli_query($dblink,"SET ChARACTER SET utf8");
+mysqli_query($conn,"SET ChARACTER SET utf8");
 
-$result = mysqli_query($dblink, "DELETE FROM `perfume23` WHERE id=$id");
+$result = mysqli_query($conn, "DELETE FROM `perfume23` WHERE id=$id");
 
 if($result) {
     echo '<div class="alert alert-success text-center">
@@ -22,6 +22,6 @@ if($result) {
           </div>';
 }
 
-mysqli_close($dblink);
+mysqli_close($conn);
 include("theme-footer.html");
 ?>

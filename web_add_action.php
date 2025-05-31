@@ -1,6 +1,7 @@
 <?php
-include("theme-header.php");
+header('Content-Type: text/html; charset=utf-8');
 
+include("theme-header.php");
 // اعتبارسنجی داده‌های ورودی
 
 $name=htmlspecialchars($_POST["name"]);
@@ -14,11 +15,14 @@ move_uploaded_file($source,$target);
 
 // اتصال به پایگاه داده
 include("connect.php");
-$dblink=mysqli_connect("localhost","root","","perfume");
-mysqli_query($dblink,"SET ChARACTER SET utf8");
+$conn=mysqli_connect("localhost","root","","perfumezahra");
+mysqli_query($conn,"SET ChARACTER SET utf8");
 
-$result=mysqli_query($dblink,"INSERT INTO `perfume23`( `name`, `desciption`, `price`, `image`) VALUES ('$name','$desciption',$price,'$target')");
-mysqli_close($dblink);
+
+
+
+$result=mysqli_query($conn,"INSERT INTO `perfume23`( `name`, `desciption`, `price`, `image`) VALUES ('$name','$desciption',$price,'$target')");
+mysqli_close($conn);
 
 if($result==true){
     echo(" اضافه شد");
